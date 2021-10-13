@@ -1,10 +1,8 @@
 package almamatter;
-
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 //One object - two threads and two tasks
-
-public class ThreadDemo {
+public class ThreadDemo2 {
 	public static void main(String[] args) {
 		ReservationCounter central=new ReservationCounter();
 		
@@ -25,8 +23,10 @@ class BookingJob implements Runnable{
 	@Override
 	public void run() {
 		Thread.currentThread().setName(name);
-		counter.bookTicket(amt);
-		counter.giveChange();		
+		synchronized(counter) {// object lock
+			counter.bookTicket(amt);
+			counter.giveChange();	
+		}
 	}
 }
 class ReservationCounter{
@@ -36,6 +36,7 @@ class ReservationCounter{
 		Thread t=Thread.currentThread();
 		String name=t.getName();
 		System.out.println("Ticket Booked by...:"+name+"..amount is...:"+amt);
+		try {Thread.sleep(5000);}catch(Exception e) {}
 	}
 	
 	public void giveChange() {
@@ -44,6 +45,4 @@ class ReservationCounter{
 		System.out.println("Change given to...:"+name+"..amount is...:"+(amt-100));
 	}
 }
-
-
 
